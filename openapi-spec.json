@@ -316,7 +316,7 @@
     "/health": {
       "get": {
         "summary": "Health Route",
-        "description": "Check that the service is up and running",
+        "description": "```Use this in terminal```",
         "security": [
           {
             "bearerAuth": []
@@ -1999,5 +1999,11 @@
         }
       }
     }
-  }
+  },
+  "servers": [
+    {
+      "description": "Staging",
+      "url": "https://clarityo.stg.com"
+    }
+  ]
 }
