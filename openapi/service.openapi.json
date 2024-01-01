@@ -1,8 +1,5 @@
 {
   "openapi": "3.0.0",
-  "x-stoplight": {
-    "id": "3gjem7aiomz8g"
-  },
   "info": {
     "version": "0.0.1",
     "title": "Order Process Service",
@@ -43,15 +40,8 @@
             "description": "Quantity of item"
           }
         },
-        "required": [
-          "id",
-          "name",
-          "quantity"
-        ],
-        "description": "Schema of item within order",
-        "x-stoplight": {
-          "id": "jbwqgqkneh34h"
-        }
+        "required": ["id", "name", "quantity"],
+        "description": "Schema of item within order"
       },
       "PatchOrderItemRequest": {
         "type": "object",
@@ -62,13 +52,8 @@
             "example": 5
           }
         },
-        "required": [
-          "quantity"
-        ],
-        "description": "Request Schema for creating item in order",
-        "x-stoplight": {
-          "id": "uaonv9r6i1g1w"
-        }
+        "required": ["quantity"],
+        "description": "Request Schema for creating item in order"
       },
       "Order": {
         "type": "object",
@@ -113,10 +98,7 @@
           "finalized",
           "openedAt"
         ],
-        "description": "Schema of order",
-        "x-stoplight": {
-          "id": "si5zooapuyo4g"
-        }
+        "description": "Schema of order"
       },
       "PostOrderRequest": {
         "type": "object",
@@ -132,14 +114,8 @@
             "example": "supplierId123"
           }
         },
-        "required": [
-          "customerId",
-          "supplierId"
-        ],
-        "description": "Request Schema for creating orders",
-        "x-stoplight": {
-          "id": "v75li2jh7nln4"
-        }
+        "required": ["customerId", "supplierId"],
+        "description": "Request Schema for creating orders"
       },
       "Purchase list item schema": {
         "type": "object",
@@ -172,22 +148,11 @@
             "example": true
           }
         },
-        "required": [
-          "businessId",
-          "supplierId",
-          "productId",
-          "isRecommended"
-        ],
-        "description": "Purchase list item schema",
-        "x-stoplight": {
-          "id": "9jibkwawil7mm"
-        }
+        "required": ["businessId", "supplierId", "productId", "isRecommended"],
+        "description": "Purchase list item schema"
       },
       "Amount of records that match the query": {
-        "type": "number",
-        "x-stoplight": {
-          "id": "i476hn8r4z0kh"
-        }
+        "type": "number"
       },
       "Actual records": {
         "type": "array",
@@ -230,10 +195,7 @@
                         "example": "14:00"
                       }
                     },
-                    "required": [
-                      "dayOfWeek",
-                      "timeOfDay"
-                    ],
+                    "required": ["dayOfWeek", "timeOfDay"],
                     "additionalProperties": false
                   },
                   "orderCutOffTime": {
@@ -257,17 +219,11 @@
                         "example": "14:00"
                       }
                     },
-                    "required": [
-                      "dayOfWeek",
-                      "timeOfDay"
-                    ],
+                    "required": ["dayOfWeek", "timeOfDay"],
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "deliveryArrivalTime",
-                  "orderCutOffTime"
-                ],
+                "required": ["deliveryArrivalTime", "orderCutOffTime"],
                 "additionalProperties": false
               }
             },
@@ -278,10 +234,7 @@
                 "properties": {
                   "method": {
                     "type": "string",
-                    "enum": [
-                      "email",
-                      "whatsApp"
-                    ]
+                    "enum": ["email", "whatsApp"]
                   },
                   "address": {
                     "type": "string",
@@ -289,24 +242,13 @@
                     "example": "email@email.com"
                   }
                 },
-                "required": [
-                  "method",
-                  "address"
-                ],
+                "required": ["method", "address"],
                 "additionalProperties": false
               }
             }
           },
-          "required": [
-            "businessId",
-            "supplierId",
-            "schedules",
-            "contactInfo"
-          ],
+          "required": ["businessId", "supplierId", "schedules", "contactInfo"],
           "additionalProperties": false
-        },
-        "x-stoplight": {
-          "id": "o9x331q89at9j"
         }
       }
     },
@@ -316,7 +258,7 @@
     "/health": {
       "get": {
         "summary": "Health Route",
-        "description": "```Use this in terminal```",
+        "description": "Check that the service is up and running",
         "security": [
           {
             "bearerAuth": []
@@ -338,9 +280,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "rvgk9289lmel3"
         }
       }
     },
@@ -389,10 +328,7 @@
                     "description": "Quantity of item"
                   }
                 },
-                "required": [
-                  "name",
-                  "quantity"
-                ]
+                "required": ["name", "quantity"]
               }
             }
           }
@@ -420,9 +356,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "khfrvlsi1pgti"
         }
       }
     },
@@ -489,9 +422,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "hkhezhywv3q5q"
         }
       },
       "delete": {
@@ -538,9 +468,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "qemb60wya409m"
         }
       }
     },
@@ -634,10 +561,7 @@
                       "type": "number"
                     }
                   },
-                  "required": [
-                    "data",
-                    "count"
-                  ]
+                  "required": ["data", "count"]
                 }
               }
             }
@@ -654,9 +578,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "synub3mna0clu"
         }
       },
       "post": {
@@ -728,9 +649,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "zm9kb2dplwy6m"
         }
       }
     },
@@ -777,9 +695,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "buffw9k5hmwnd"
         }
       }
     },
@@ -879,9 +794,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "0sro64gjgyjko"
         }
       },
       "post": {
@@ -919,9 +831,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "cyrbxwrr0w63e"
         }
       }
     },
@@ -972,9 +881,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "ctpt6cz1d2q68"
         }
       }
     },
@@ -1035,10 +941,7 @@
                     "example": "productId"
                   }
                 },
-                "required": [
-                  "isRecommended",
-                  "productId"
-                ]
+                "required": ["isRecommended", "productId"]
               }
             }
           }
@@ -1059,9 +962,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "2hfujtitsnr3k"
         }
       }
     },
@@ -1144,10 +1044,7 @@
                       "$ref": "#/components/schemas/Actual records"
                     }
                   },
-                  "required": [
-                    "count",
-                    "data"
-                  ]
+                  "required": ["count", "data"]
                 }
               }
             }
@@ -1164,9 +1061,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "b42dyt9gywsdf"
         }
       },
       "post": {
@@ -1221,10 +1115,7 @@
                               "example": "14:00"
                             }
                           },
-                          "required": [
-                            "dayOfWeek",
-                            "timeOfDay"
-                          ],
+                          "required": ["dayOfWeek", "timeOfDay"],
                           "additionalProperties": false
                         },
                         "orderCutOffTime": {
@@ -1248,17 +1139,11 @@
                               "example": "14:00"
                             }
                           },
-                          "required": [
-                            "dayOfWeek",
-                            "timeOfDay"
-                          ],
+                          "required": ["dayOfWeek", "timeOfDay"],
                           "additionalProperties": false
                         }
                       },
-                      "required": [
-                        "deliveryArrivalTime",
-                        "orderCutOffTime"
-                      ],
+                      "required": ["deliveryArrivalTime", "orderCutOffTime"],
                       "additionalProperties": false
                     }
                   },
@@ -1269,10 +1154,7 @@
                       "properties": {
                         "method": {
                           "type": "string",
-                          "enum": [
-                            "email",
-                            "whatsApp"
-                          ]
+                          "enum": ["email", "whatsApp"]
                         },
                         "address": {
                           "type": "string",
@@ -1280,10 +1162,7 @@
                           "example": "email@email.com"
                         }
                       },
-                      "required": [
-                        "method",
-                        "address"
-                      ],
+                      "required": ["method", "address"],
                       "additionalProperties": false
                     }
                   }
@@ -1315,9 +1194,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "8pdg57lnddtmk"
         }
       }
     },
@@ -1374,10 +1250,7 @@
                               "example": "14:00"
                             }
                           },
-                          "required": [
-                            "dayOfWeek",
-                            "timeOfDay"
-                          ],
+                          "required": ["dayOfWeek", "timeOfDay"],
                           "additionalProperties": false
                         },
                         "orderCutOffTime": {
@@ -1401,10 +1274,7 @@
                               "example": "14:00"
                             }
                           },
-                          "required": [
-                            "dayOfWeek",
-                            "timeOfDay"
-                          ],
+                          "required": ["dayOfWeek", "timeOfDay"],
                           "additionalProperties": false
                         },
                         "id": {
@@ -1412,10 +1282,7 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "deliveryArrivalTime",
-                        "orderCutOffTime"
-                      ],
+                      "required": ["deliveryArrivalTime", "orderCutOffTime"],
                       "additionalProperties": false
                     }
                   },
@@ -1426,10 +1293,7 @@
                       "properties": {
                         "method": {
                           "type": "string",
-                          "enum": [
-                            "email",
-                            "whatsApp"
-                          ]
+                          "enum": ["email", "whatsApp"]
                         },
                         "address": {
                           "type": "string",
@@ -1441,10 +1305,7 @@
                           "nullable": true
                         }
                       },
-                      "required": [
-                        "method",
-                        "address"
-                      ],
+                      "required": ["method", "address"],
                       "additionalProperties": false
                     }
                   }
@@ -1476,9 +1337,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "7zly917qams63"
         }
       }
     },
@@ -1513,10 +1371,7 @@
                 "properties": {
                   "method": {
                     "type": "string",
-                    "enum": [
-                      "email",
-                      "whatsApp"
-                    ]
+                    "enum": ["email", "whatsApp"]
                   },
                   "address": {
                     "type": "string",
@@ -1524,10 +1379,7 @@
                     "example": "email@email.com"
                   }
                 },
-                "required": [
-                  "method",
-                  "address"
-                ],
+                "required": ["method", "address"],
                 "additionalProperties": false
               }
             }
@@ -1549,9 +1401,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "8uluviq3ob46u"
         }
       }
     },
@@ -1600,9 +1449,7 @@
                     "example": "email@email.com"
                   }
                 },
-                "required": [
-                  "address"
-                ],
+                "required": ["address"],
                 "additionalProperties": false
               }
             }
@@ -1624,9 +1471,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "l348yjlsanf9b"
         }
       },
       "delete": {
@@ -1675,9 +1519,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "9jsly0hnuvu47"
         }
       }
     },
@@ -1731,10 +1572,7 @@
                         "example": "14:00"
                       }
                     },
-                    "required": [
-                      "dayOfWeek",
-                      "timeOfDay"
-                    ],
+                    "required": ["dayOfWeek", "timeOfDay"],
                     "additionalProperties": false
                   },
                   "orderCutOffTime": {
@@ -1758,17 +1596,11 @@
                         "example": "14:00"
                       }
                     },
-                    "required": [
-                      "dayOfWeek",
-                      "timeOfDay"
-                    ],
+                    "required": ["dayOfWeek", "timeOfDay"],
                     "additionalProperties": false
                   }
                 },
-                "required": [
-                  "deliveryArrivalTime",
-                  "orderCutOffTime"
-                ],
+                "required": ["deliveryArrivalTime", "orderCutOffTime"],
                 "additionalProperties": false
               }
             }
@@ -1790,9 +1622,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "ahet6f5saw2q3"
         }
       }
     },
@@ -1856,10 +1685,7 @@
                         "example": "14:00"
                       }
                     },
-                    "required": [
-                      "dayOfWeek",
-                      "timeOfDay"
-                    ],
+                    "required": ["dayOfWeek", "timeOfDay"],
                     "additionalProperties": false
                   },
                   "orderCutOffTime": {
@@ -1883,10 +1709,7 @@
                         "example": "14:00"
                       }
                     },
-                    "required": [
-                      "dayOfWeek",
-                      "timeOfDay"
-                    ],
+                    "required": ["dayOfWeek", "timeOfDay"],
                     "additionalProperties": false
                   }
                 },
@@ -1911,9 +1734,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "15epv2pct8zxz"
         }
       },
       "delete": {
@@ -1962,9 +1782,6 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "frw4rhdqtq5go"
         }
       }
     },
@@ -1993,17 +1810,8 @@
           "500": {
             "description": "Unexpected exception"
           }
-        },
-        "x-stoplight": {
-          "id": "m2jxra86n90q6"
         }
       }
     }
-  },
-  "servers": [
-    {
-      "description": "Staging",
-      "url": "https://clarityo.stg.com"
-    }
-  ]
+  }
 }
