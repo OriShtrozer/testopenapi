@@ -1971,7 +1971,7 @@
     "/docs/json": {
       "get": {
         "summary": "Get Docs",
-        "description": "Get the json representation of our open api docs",
+        "description": "Get the json representation of the service open api docs",
         "security": [
           {
             "bearerAuth": []
