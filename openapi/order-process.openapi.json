@@ -1,5 +1,8 @@
 {
   "openapi": "3.0.0",
+  "x-stoplight": {
+    "id": "a53d60463ebaf"
+  },
   "info": {
     "version": "0.0.1",
     "title": "Order Process Service",
@@ -40,8 +43,15 @@
             "description": "Quantity of item"
           }
         },
-        "required": ["id", "name", "quantity"],
-        "description": "Schema of item within order"
+        "required": [
+          "id",
+          "name",
+          "quantity"
+        ],
+        "description": "Schema of item within order",
+        "x-stoplight": {
+          "id": "c6vszrxg86x3a"
+        }
       },
       "PatchOrderItemRequest": {
         "type": "object",
@@ -52,8 +62,13 @@
             "example": 5
           }
         },
-        "required": ["quantity"],
-        "description": "Request Schema for creating item in order"
+        "required": [
+          "quantity"
+        ],
+        "description": "Request Schema for creating item in order",
+        "x-stoplight": {
+          "id": "p290pj5lcpyr7"
+        }
       },
       "Order": {
         "type": "object",
@@ -98,7 +113,10 @@
           "finalized",
           "openedAt"
         ],
-        "description": "Schema of order"
+        "description": "Schema of order",
+        "x-stoplight": {
+          "id": "hmoxzi3ygps5p"
+        }
       },
       "PostOrderRequest": {
         "type": "object",
@@ -114,8 +132,14 @@
             "example": "supplierId123"
           }
         },
-        "required": ["customerId", "supplierId"],
-        "description": "Request Schema for creating orders"
+        "required": [
+          "customerId",
+          "supplierId"
+        ],
+        "description": "Request Schema for creating orders",
+        "x-stoplight": {
+          "id": "7u3njxnirbci5"
+        }
       },
       "Purchase list item schema": {
         "type": "object",
@@ -148,11 +172,22 @@
             "example": true
           }
         },
-        "required": ["businessId", "supplierId", "productId", "isRecommended"],
-        "description": "Purchase list item schema"
+        "required": [
+          "businessId",
+          "supplierId",
+          "productId",
+          "isRecommended"
+        ],
+        "description": "Purchase list item schema",
+        "x-stoplight": {
+          "id": "m7a42a3bv2t3y"
+        }
       },
       "Amount of records that match the query": {
-        "type": "number"
+        "type": "number",
+        "x-stoplight": {
+          "id": "rcuppzgj1jsyx"
+        }
       },
       "Actual records": {
         "type": "array",
@@ -195,7 +230,10 @@
                         "example": "14:00"
                       }
                     },
-                    "required": ["dayOfWeek", "timeOfDay"],
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
                     "additionalProperties": false
                   },
                   "orderCutOffTime": {
@@ -219,11 +257,17 @@
                         "example": "14:00"
                       }
                     },
-                    "required": ["dayOfWeek", "timeOfDay"],
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["deliveryArrivalTime", "orderCutOffTime"],
+                "required": [
+                  "deliveryArrivalTime",
+                  "orderCutOffTime"
+                ],
                 "additionalProperties": false
               }
             },
@@ -234,7 +278,10 @@
                 "properties": {
                   "method": {
                     "type": "string",
-                    "enum": ["email", "whatsApp"]
+                    "enum": [
+                      "email",
+                      "whatsApp"
+                    ]
                   },
                   "address": {
                     "type": "string",
@@ -242,13 +289,24 @@
                     "example": "email@email.com"
                   }
                 },
-                "required": ["method", "address"],
+                "required": [
+                  "method",
+                  "address"
+                ],
                 "additionalProperties": false
               }
             }
           },
-          "required": ["businessId", "supplierId", "schedules", "contactInfo"],
+          "required": [
+            "businessId",
+            "supplierId",
+            "schedules",
+            "contactInfo"
+          ],
           "additionalProperties": false
+        },
+        "x-stoplight": {
+          "id": "5k3p2hf27ugz5"
         }
       }
     },
@@ -280,6 +338,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "2f59ts7o2mk0c"
         }
       }
     },
@@ -328,7 +389,10 @@
                     "description": "Quantity of item"
                   }
                 },
-                "required": ["name", "quantity"]
+                "required": [
+                  "name",
+                  "quantity"
+                ]
               }
             }
           }
@@ -356,6 +420,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "q2a4nqshvla2d"
         }
       }
     },
@@ -422,6 +489,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "0uq6wdi34bdzg"
         }
       },
       "delete": {
@@ -468,6 +538,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "opkmvq15ckxxn"
         }
       }
     },
@@ -561,7 +634,10 @@
                       "type": "number"
                     }
                   },
-                  "required": ["data", "count"]
+                  "required": [
+                    "data",
+                    "count"
+                  ]
                 }
               }
             }
@@ -578,6 +654,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "v9k50h651zhp3"
         }
       },
       "post": {
@@ -649,6 +728,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "d4y5zawk3twnc"
         }
       }
     },
@@ -695,6 +777,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "t3302z20llc4a"
         }
       }
     },
@@ -794,6 +879,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "ck1fcwl0soi0l"
         }
       },
       "post": {
@@ -831,6 +919,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "lambxcuh8x8d0"
         }
       }
     },
@@ -881,6 +972,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "z7g46vc4yvdt2"
         }
       }
     },
@@ -941,7 +1035,10 @@
                     "example": "productId"
                   }
                 },
-                "required": ["isRecommended", "productId"]
+                "required": [
+                  "isRecommended",
+                  "productId"
+                ]
               }
             }
           }
@@ -962,6 +1059,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "8wiktru5sudkc"
         }
       }
     },
@@ -1044,7 +1144,10 @@
                       "$ref": "#/components/schemas/Actual records"
                     }
                   },
-                  "required": ["count", "data"]
+                  "required": [
+                    "count",
+                    "data"
+                  ]
                 }
               }
             }
@@ -1061,6 +1164,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "r1hoxmob7twxu"
         }
       },
       "post": {
@@ -1115,7 +1221,10 @@
                               "example": "14:00"
                             }
                           },
-                          "required": ["dayOfWeek", "timeOfDay"],
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
                           "additionalProperties": false
                         },
                         "orderCutOffTime": {
@@ -1139,11 +1248,17 @@
                               "example": "14:00"
                             }
                           },
-                          "required": ["dayOfWeek", "timeOfDay"],
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
                           "additionalProperties": false
                         }
                       },
-                      "required": ["deliveryArrivalTime", "orderCutOffTime"],
+                      "required": [
+                        "deliveryArrivalTime",
+                        "orderCutOffTime"
+                      ],
                       "additionalProperties": false
                     }
                   },
@@ -1154,7 +1269,10 @@
                       "properties": {
                         "method": {
                           "type": "string",
-                          "enum": ["email", "whatsApp"]
+                          "enum": [
+                            "email",
+                            "whatsApp"
+                          ]
                         },
                         "address": {
                           "type": "string",
@@ -1162,7 +1280,10 @@
                           "example": "email@email.com"
                         }
                       },
-                      "required": ["method", "address"],
+                      "required": [
+                        "method",
+                        "address"
+                      ],
                       "additionalProperties": false
                     }
                   }
@@ -1194,6 +1315,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "7a5cu98vaerqn"
         }
       }
     },
@@ -1250,7 +1374,10 @@
                               "example": "14:00"
                             }
                           },
-                          "required": ["dayOfWeek", "timeOfDay"],
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
                           "additionalProperties": false
                         },
                         "orderCutOffTime": {
@@ -1274,7 +1401,10 @@
                               "example": "14:00"
                             }
                           },
-                          "required": ["dayOfWeek", "timeOfDay"],
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
                           "additionalProperties": false
                         },
                         "id": {
@@ -1282,7 +1412,10 @@
                           "nullable": true
                         }
                       },
-                      "required": ["deliveryArrivalTime", "orderCutOffTime"],
+                      "required": [
+                        "deliveryArrivalTime",
+                        "orderCutOffTime"
+                      ],
                       "additionalProperties": false
                     }
                   },
@@ -1293,7 +1426,10 @@
                       "properties": {
                         "method": {
                           "type": "string",
-                          "enum": ["email", "whatsApp"]
+                          "enum": [
+                            "email",
+                            "whatsApp"
+                          ]
                         },
                         "address": {
                           "type": "string",
@@ -1305,7 +1441,10 @@
                           "nullable": true
                         }
                       },
-                      "required": ["method", "address"],
+                      "required": [
+                        "method",
+                        "address"
+                      ],
                       "additionalProperties": false
                     }
                   }
@@ -1337,6 +1476,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "l51hszys9g8am"
         }
       }
     },
@@ -1371,7 +1513,10 @@
                 "properties": {
                   "method": {
                     "type": "string",
-                    "enum": ["email", "whatsApp"]
+                    "enum": [
+                      "email",
+                      "whatsApp"
+                    ]
                   },
                   "address": {
                     "type": "string",
@@ -1379,7 +1524,10 @@
                     "example": "email@email.com"
                   }
                 },
-                "required": ["method", "address"],
+                "required": [
+                  "method",
+                  "address"
+                ],
                 "additionalProperties": false
               }
             }
@@ -1401,6 +1549,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "pkjlrm73pyt7z"
         }
       }
     },
@@ -1449,7 +1600,9 @@
                     "example": "email@email.com"
                   }
                 },
-                "required": ["address"],
+                "required": [
+                  "address"
+                ],
                 "additionalProperties": false
               }
             }
@@ -1471,6 +1624,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "rhhzndlfxhcow"
         }
       },
       "delete": {
@@ -1519,6 +1675,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "sb7z2tuioopo7"
         }
       }
     },
@@ -1572,7 +1731,10 @@
                         "example": "14:00"
                       }
                     },
-                    "required": ["dayOfWeek", "timeOfDay"],
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
                     "additionalProperties": false
                   },
                   "orderCutOffTime": {
@@ -1596,11 +1758,17 @@
                         "example": "14:00"
                       }
                     },
-                    "required": ["dayOfWeek", "timeOfDay"],
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
                     "additionalProperties": false
                   }
                 },
-                "required": ["deliveryArrivalTime", "orderCutOffTime"],
+                "required": [
+                  "deliveryArrivalTime",
+                  "orderCutOffTime"
+                ],
                 "additionalProperties": false
               }
             }
@@ -1622,6 +1790,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "dyhm8jszudf3y"
         }
       }
     },
@@ -1685,7 +1856,10 @@
                         "example": "14:00"
                       }
                     },
-                    "required": ["dayOfWeek", "timeOfDay"],
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
                     "additionalProperties": false
                   },
                   "orderCutOffTime": {
@@ -1709,7 +1883,10 @@
                         "example": "14:00"
                       }
                     },
-                    "required": ["dayOfWeek", "timeOfDay"],
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
                     "additionalProperties": false
                   }
                 },
@@ -1734,6 +1911,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "jo2vrb41exokx"
         }
       },
       "delete": {
@@ -1782,6 +1962,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "r7qr0ypa1t1l1"
         }
       }
     },
@@ -1810,6 +1993,9 @@
           "500": {
             "description": "Unexpected exception"
           }
+        },
+        "x-stoplight": {
+          "id": "j00l76692ggvw"
         }
       }
     }
