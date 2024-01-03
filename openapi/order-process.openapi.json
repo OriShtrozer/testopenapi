@@ -781,6 +781,31 @@
         "x-stoplight": {
           "id": "t3302z20llc4a"
         }
+      },
+      "delete": {
+        "summary": "Delete Order Process",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "Indicates successful deletion"
+          }
+        },
+        "operationId": "delete-order-processes-:orderId",
+        "x-stoplight": {
+          "id": "bdmxm0vs7fp4z"
+        },
+        "description": "Delete order by id",
+         "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ]
       }
     },
     "/purchase-list-items/": {
