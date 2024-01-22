@@ -1,2125 +1,2356 @@
 {
-    "openapi": "3.0.0",
-    "info": {
-        "version": "0.0.1",
-        "title": "Order Process Service",
-        "description": "Clarityo Order Process service that manages the order process for the client"
+  "openapi": "3.0.0",
+  "info": {
+    "version": "0.0.1",
+    "title": "Order Process Service",
+    "description": "Clarityo Order Process service that manages the order process for the client"
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "name": "Authorization",
+        "in": "header",
+        "type": "apiKey",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
     },
-    "components": {
-        "securitySchemes": {
-            "bearerAuth": {
-                "name": "Authorization",
-                "in": "header",
-                "type": "apiKey",
-                "scheme": "bearer",
-                "bearerFormat": "JWT"
-            }
+    "schemas": {
+      "OrderItem": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id of order item"
+          },
+          "productId": {
+            "type": "string",
+            "description": "product id"
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of item"
+          },
+          "sku": {
+            "type": "string",
+            "nullable": true,
+            "description": "Sku of item"
+          },
+          "quantity": {
+            "type": "number",
+            "description": "Quantity of item"
+          }
         },
-        "schemas": {
-            "OrderItem": {
+        "required": [
+          "id",
+          "name",
+          "quantity"
+        ],
+        "description": "Schema of item within order"
+      },
+      "PatchOrderItemRequest": {
+        "type": "object",
+        "properties": {
+          "quantity": {
+            "type": "number",
+            "description": "new quantity numeric value",
+            "example": 5
+          }
+        },
+        "required": [
+          "quantity"
+        ],
+        "description": "Request Schema for creating item in order"
+      },
+      "Order": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Id of order"
+          },
+          "customerId": {
+            "type": "string",
+            "description": "Id of customer"
+          },
+          "supplierId": {
+            "type": "string",
+            "description": "Supplier id"
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/OrderItem"
+            },
+            "description": "Array of items"
+          },
+          "finalized": {
+            "type": "boolean",
+            "description": "Is the order finalized or not"
+          },
+          "openedAt": {
+            "type": "string",
+            "description": "Date the order was openedAt"
+          },
+          "finalizedAt": {
+            "type": "string",
+            "description": "Returned only if order is finalized, date the order was finalized"
+          }
+        },
+        "required": [
+          "id",
+          "customerId",
+          "supplierId",
+          "items",
+          "finalized",
+          "openedAt"
+        ],
+        "description": "Schema of order"
+      },
+      "PostOrderRequest": {
+        "type": "object",
+        "properties": {
+          "customerId": {
+            "type": "string",
+            "description": "Id of customer",
+            "example": "restaurantId123"
+          },
+          "supplierId": {
+            "type": "string",
+            "description": "Id of supplier",
+            "example": "supplierId123"
+          }
+        },
+        "required": [
+          "customerId",
+          "supplierId"
+        ],
+        "description": "Request Schema for creating orders"
+      },
+      "PatchOrderRequest": {
+        "type": "object",
+        "properties": {
+          "notes": {
+            "type": "string",
+            "description": "Notes to update for order",
+            "example": "This is a note on the order"
+          }
+        },
+        "required": [
+          "notes"
+        ],
+        "additionalProperties": false,
+        "description": "Request Schema for updating orders"
+      },
+      "Purchase list item schema": {
+        "type": "object",
+        "properties": {
+          "businessId": {
+            "type": "string",
+            "description": "Business Id",
+            "example": "businessId"
+          },
+          "supplierId": {
+            "type": "string",
+            "description": "Supplier id",
+            "example": "supplierId"
+          },
+          "productId": {
+            "type": "string",
+            "description": "Product Id",
+            "example": "productId"
+          },
+          "isRecommended": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "description": "Is purchase list item recommended or not",
+            "example": true
+          }
+        },
+        "required": [
+          "businessId",
+          "supplierId",
+          "productId",
+          "isRecommended"
+        ],
+        "description": "Purchase list item schema"
+      },
+      "Amount of records that match the query": {
+        "type": "number"
+      },
+      "Actual records": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "businessId": {
+              "type": "string",
+              "description": "Business id of order term",
+              "example": "bid"
+            },
+            "supplierId": {
+              "type": "string",
+              "description": "Supplier id of order term - who the business has a agreement with",
+              "example": "bid"
+            },
+            "schedules": {
+              "type": "array",
+              "items": {
                 "type": "object",
                 "properties": {
-                    "id": {
+                  "deliveryArrivalTime": {
+                    "type": "object",
+                    "properties": {
+                      "dayOfWeek": {
                         "type": "string",
-                        "description": "Id of order item"
+                        "enum": [
+                          "sunday",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday"
+                        ]
+                      },
+                      "timeOfDay": {
+                        "type": "string",
+                        "description": "Time of day for delivery arrival",
+                        "example": "14:00"
+                      }
                     },
-                    "productId": {
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "orderCutOffTime": {
+                    "type": "object",
+                    "properties": {
+                      "dayOfWeek": {
                         "type": "string",
-                        "description": "product id"
+                        "enum": [
+                          "sunday",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday"
+                        ]
+                      },
+                      "timeOfDay": {
+                        "type": "string",
+                        "description": "Time of day for order cut off",
+                        "example": "14:00"
+                      }
+                    },
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "required": [
+                  "deliveryArrivalTime",
+                  "orderCutOffTime"
+                ],
+                "additionalProperties": false
+              }
+            },
+            "contactInfo": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "email",
+                      "whatsApp"
+                    ]
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Contact info address",
+                    "example": "email@email.com"
+                  }
+                },
+                "required": [
+                  "method",
+                  "address"
+                ],
+                "additionalProperties": false
+              }
+            }
+          },
+          "required": [
+            "businessId",
+            "supplierId",
+            "schedules",
+            "contactInfo"
+          ],
+          "additionalProperties": false
+        }
+      }
+    },
+    "parameters": {}
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "summary": "Health Route",
+        "description": "Check that the service is up and running",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All orders that match filter"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-processes/:orderId/items/": {
+      "post": {
+        "summary": "Create Item in Order",
+        "description": "Create Item in Order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Create Item in Order body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "productId": {
+                    "type": "string",
+                    "description": "product id"
+                  },
+                  "name": {
+                    "type": "string",
+                    "description": "Name of item"
+                  },
+                  "sku": {
+                    "type": "string",
+                    "nullable": true,
+                    "description": "Sku of item"
+                  },
+                  "quantity": {
+                    "type": "number",
+                    "description": "Quantity of item"
+                  }
+                },
+                "required": [
+                  "name",
+                  "quantity"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create Item in Order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderItem"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Patch all items in order",
+        "description": "Patch all items in order - this route should create multiple items, on the condition the order does not already have items",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Patch all items in order - add all items to order",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "productId": {
+                      "type": "string",
+                      "description": "product id"
                     },
                     "name": {
-                        "type": "string",
-                        "description": "Name of item"
+                      "type": "string",
+                      "description": "Name of item"
                     },
                     "sku": {
-                        "type": "string",
-                        "nullable": true,
-                        "description": "Sku of item"
+                      "type": "string",
+                      "nullable": true,
+                      "description": "Sku of item"
                     },
                     "quantity": {
-                        "type": "number",
-                        "description": "Quantity of item"
+                      "type": "number",
+                      "description": "Quantity of item"
                     }
-                },
-                "required": [
-                    "id",
+                  },
+                  "required": [
                     "name",
                     "quantity"
-                ],
-                "description": "Schema of item within order"
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicates successful patch",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/OrderItem"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "409": {
+            "description": "Indicates that the order already has items"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-processes/:orderId/items/:itemId": {
+      "patch": {
+        "summary": "Patch update Item in Order",
+        "description": "Patch update Item in Order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
             },
-            "PatchOrderItemRequest": {
-                "type": "object",
-                "properties": {
-                    "quantity": {
-                        "type": "number",
-                        "description": "new quantity numeric value",
-                        "example": 5
-                    }
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "itemId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Patch update Item in Order body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchOrderItemRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Patch update Item in Order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/PatchOrderItemRequest"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Item in Order",
+        "description": "Delete Item in Order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "itemId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Patch update Item in Order"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-processes/": {
+      "get": {
+        "summary": "Get Orders",
+        "description": "Get all order that match the filter",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Customer id to filter by",
+              "example": "exampleCustomerId"
+            },
+            "required": false,
+            "name": "customerId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
                 },
-                "required": [
-                    "quantity"
-                ],
-                "description": "Request Schema for creating item in order"
+                {
+                  "type": "string"
+                }
+              ],
+              "description": "A flag to return only finalized orders or non-finalized orders, if not provided, returns all orders"
             },
-            "Order": {
-                "type": "object",
-                "properties": {
+            "required": false,
+            "name": "finalized",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 100
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "default": 25,
+              "description": "Limit the number of orders returned"
+            },
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "default": 0,
+              "description": "The amount of documents to offset(skip) before retrieving limit amount of documents"
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All orders that match filter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "data": {
+                      "type": "array",
+                      "items": {
+                        "$ref": "#/components/schemas/Order"
+                      }
+                    },
+                    "count": {
+                      "type": "number"
+                    }
+                  },
+                  "required": [
+                    "data",
+                    "count"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create Orders",
+        "description": "Create new order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Create new order body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PostOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Create new order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
                     "id": {
-                        "type": "string",
-                        "description": "Id of order"
+                      "type": "string"
                     },
                     "customerId": {
-                        "type": "string",
-                        "description": "Id of customer"
+                      "type": "string"
                     },
                     "supplierId": {
-                        "type": "string",
-                        "description": "Supplier id"
+                      "type": "string"
                     },
                     "items": {
-                        "type": "array",
-                        "items": {
+                      "type": "array",
+                      "items": {
+                        "allOf": [
+                          {
                             "$ref": "#/components/schemas/OrderItem"
-                        },
-                        "description": "Array of items"
-                    },
-                    "finalized": {
-                        "type": "boolean",
-                        "description": "Is the order finalized or not"
+                          },
+                          {
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "Id of order item"
+                              },
+                              "productId": {
+                                "type": "string",
+                                "description": "product id"
+                              },
+                              "name": {
+                                "type": "string",
+                                "description": "Name of item"
+                              },
+                              "sku": {
+                                "type": "string",
+                                "description": "Sku of item"
+                              },
+                              "quantity": {
+                                "type": "number",
+                                "description": "Quantity of item"
+                              }
+                            }
+                          }
+                        ]
+                      }
                     },
                     "openedAt": {
-                        "type": "string",
-                        "description": "Date the order was openedAt"
+                      "type": "string"
                     },
-                    "finalizedAt": {
-                        "type": "string",
-                        "description": "Returned only if order is finalized, date the order was finalized"
+                    "notes": {
+                      "type": "string"
                     }
-                },
-                "required": [
+                  },
+                  "required": [
                     "id",
                     "customerId",
                     "supplierId",
                     "items",
-                    "finalized",
                     "openedAt"
-                ],
-                "description": "Schema of order"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-processes/:orderId": {
+      "get": {
+        "summary": "Get Order by Id",
+        "description": "Get Order by Id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
             },
-            "PostOrderRequest": {
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get Order by Id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Order"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete Order by Id",
+        "description": "Delete Order by Id",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "orderId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Indicates successful deletion"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "patch": {
+        "summary": "Patch Order",
+        "description": "Patch order",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Patch order body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PatchOrderRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicates successful patch"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/purchase-list-items/": {
+      "get": {
+        "summary": "Get purchase list items",
+        "description": "Get all purchase list items that match the filter",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Business Id",
+              "example": "businessId"
+            },
+            "required": true,
+            "name": "businessId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Supplier id",
+              "example": "supplierId"
+            },
+            "required": false,
+            "name": "supplierId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0,
+                  "maximum": 100
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "default": 25,
+              "description": "Limit purchase list items returned",
+              "example": 25
+            },
+            "required": true,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "minimum": 0
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "default": 0,
+              "description": "Page to retrieve",
+              "example": 1
+            },
+            "required": true,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Purchase list items",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/Purchase list item schema"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create purchase list item",
+        "description": "Create purchase list item from body passed",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Create new purchase list item body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Purchase list item schema"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Indicates successful creation of purchase list item"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/purchase-list-items/:businessId/:productId": {
+      "delete": {
+        "summary": "Delete purchase list item",
+        "description": "Delete purchase list item that matches business and product id passed",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Business Id",
+              "example": "businessId"
+            },
+            "required": true,
+            "name": "businessId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Product Id",
+              "example": "productId"
+            },
+            "required": true,
+            "name": "productId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Indicates successful deletion of purchase list item"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/purchase-list-items/:businessId/:supplierId": {
+      "put": {
+        "summary": "Updates purchase list item",
+        "description": "Updates purchase list item from body passed",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Business Id",
+              "example": "businessId"
+            },
+            "required": true,
+            "name": "businessId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Supplier id",
+              "example": "supplierId"
+            },
+            "required": true,
+            "name": "supplierId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Updates purchase list item body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
                 "properties": {
-                    "customerId": {
-                        "type": "string",
-                        "description": "Id of customer",
-                        "example": "restaurantId123"
-                    },
-                    "supplierId": {
-                        "type": "string",
-                        "description": "Id of supplier",
-                        "example": "supplierId123"
-                    }
+                  "isRecommended": {
+                    "anyOf": [
+                      {
+                        "type": "boolean"
+                      },
+                      {
+                        "type": "string"
+                      }
+                    ],
+                    "description": "Is purchase list item recommended or not",
+                    "example": true
+                  },
+                  "productId": {
+                    "type": "string",
+                    "description": "Product Id",
+                    "example": "productId"
+                  }
                 },
                 "required": [
-                    "customerId",
-                    "supplierId"
-                ],
-                "description": "Request Schema for creating orders"
+                  "isRecommended",
+                  "productId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicates successful update of purchase list item"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-terms/": {
+      "get": {
+        "summary": "Get order terms",
+        "description": "Get order terms that match the filter",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Business Id that the order term is relevant to"
             },
-            "PatchOrderRequest": {
-                "type": "object",
-                "properties": {
-                    "notes": {
-                        "type": "string",
-                        "description": "Notes to update for order",
-                        "example": "This is a note on the order"
-                    }
+            "required": true,
+            "name": "businessId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Supplier id of the order terms"
+            },
+            "required": false,
+            "name": "supplierId",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number",
+                  "maximum": 100
                 },
-                "required": [
-                    "notes"
-                ],
-                "additionalProperties": false,
-                "description": "Request Schema for updating orders"
+                {
+                  "type": "string"
+                }
+              ],
+              "default": 25,
+              "description": "Limit the number of orders returned"
             },
-            "Purchase list item schema": {
+            "required": false,
+            "name": "limit",
+            "in": "query"
+          },
+          {
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "number"
+                },
+                {
+                  "type": "string"
+                }
+              ],
+              "default": 0,
+              "description": "The amount of documents to offset(skip) before retrieving limit amount of documents"
+            },
+            "required": false,
+            "name": "offset",
+            "in": "query"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "All order terms that match filter",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": {
+                      "$ref": "#/components/schemas/Amount of records that match the query"
+                    },
+                    "data": {
+                      "$ref": "#/components/schemas/Actual records"
+                    }
+                  },
+                  "required": [
+                    "count",
+                    "data"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "post": {
+        "summary": "Create order terms",
+        "description": "Create order terms",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Create new order term body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
                 "type": "object",
                 "properties": {
-                    "businessId": {
-                        "type": "string",
-                        "description": "Business Id",
-                        "example": "businessId"
-                    },
-                    "supplierId": {
-                        "type": "string",
-                        "description": "Supplier id",
-                        "example": "supplierId"
-                    },
-                    "productId": {
-                        "type": "string",
-                        "description": "Product Id",
-                        "example": "productId"
-                    },
-                    "isRecommended": {
-                        "anyOf": [
-                            {
-                                "type": "boolean"
+                  "businessId": {
+                    "type": "string",
+                    "description": "Business id of order term",
+                    "example": "bid"
+                  },
+                  "supplierId": {
+                    "type": "string",
+                    "description": "Supplier id of order term - who the business has a agreement with",
+                    "example": "bid"
+                  },
+                  "schedules": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "deliveryArrivalTime": {
+                          "type": "object",
+                          "properties": {
+                            "dayOfWeek": {
+                              "type": "string",
+                              "enum": [
+                                "sunday",
+                                "monday",
+                                "tuesday",
+                                "wednesday",
+                                "thursday",
+                                "friday",
+                                "saturday"
+                              ]
                             },
-                            {
-                                "type": "string"
+                            "timeOfDay": {
+                              "type": "string",
+                              "description": "Time of day for delivery arrival",
+                              "example": "14:00"
                             }
-                        ],
-                        "description": "Is purchase list item recommended or not",
-                        "example": true
+                          },
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "orderCutOffTime": {
+                          "type": "object",
+                          "properties": {
+                            "dayOfWeek": {
+                              "type": "string",
+                              "enum": [
+                                "sunday",
+                                "monday",
+                                "tuesday",
+                                "wednesday",
+                                "thursday",
+                                "friday",
+                                "saturday"
+                              ]
+                            },
+                            "timeOfDay": {
+                              "type": "string",
+                              "description": "Time of day for order cut off",
+                              "example": "14:00"
+                            }
+                          },
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
+                          "additionalProperties": false
+                        }
+                      },
+                      "required": [
+                        "deliveryArrivalTime",
+                        "orderCutOffTime"
+                      ],
+                      "additionalProperties": false
                     }
+                  },
+                  "contactInfo": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string",
+                          "enum": [
+                            "email",
+                            "whatsApp"
+                          ]
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "Contact info address",
+                          "example": "email@email.com"
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "address"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
                 },
                 "required": [
-                    "businessId",
-                    "supplierId",
-                    "productId",
-                    "isRecommended"
+                  "businessId",
+                  "supplierId",
+                  "schedules",
+                  "contactInfo"
                 ],
-                "description": "Purchase list item schema"
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Indicates successful creation of order term"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-terms/:orderTermId": {
+      "patch": {
+        "summary": "Update order terms",
+        "description": "Update order terms",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "description": "Update order term body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "businessId": {
+                    "type": "string",
+                    "description": "Business id of order term",
+                    "example": "bid"
+                  },
+                  "supplierId": {
+                    "type": "string",
+                    "description": "Supplier id of order term - who the business has a agreement with",
+                    "example": "bid"
+                  },
+                  "schedules": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "deliveryArrivalTime": {
+                          "type": "object",
+                          "properties": {
+                            "dayOfWeek": {
+                              "type": "string",
+                              "enum": [
+                                "sunday",
+                                "monday",
+                                "tuesday",
+                                "wednesday",
+                                "thursday",
+                                "friday",
+                                "saturday"
+                              ]
+                            },
+                            "timeOfDay": {
+                              "type": "string",
+                              "description": "Time of day for delivery arrival",
+                              "example": "14:00"
+                            }
+                          },
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "orderCutOffTime": {
+                          "type": "object",
+                          "properties": {
+                            "dayOfWeek": {
+                              "type": "string",
+                              "enum": [
+                                "sunday",
+                                "monday",
+                                "tuesday",
+                                "wednesday",
+                                "thursday",
+                                "friday",
+                                "saturday"
+                              ]
+                            },
+                            "timeOfDay": {
+                              "type": "string",
+                              "description": "Time of day for order cut off",
+                              "example": "14:00"
+                            }
+                          },
+                          "required": [
+                            "dayOfWeek",
+                            "timeOfDay"
+                          ],
+                          "additionalProperties": false
+                        },
+                        "id": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "deliveryArrivalTime",
+                        "orderCutOffTime"
+                      ],
+                      "additionalProperties": false
+                    }
+                  },
+                  "contactInfo": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "method": {
+                          "type": "string",
+                          "enum": [
+                            "email",
+                            "whatsApp"
+                          ]
+                        },
+                        "address": {
+                          "type": "string",
+                          "description": "Contact info address",
+                          "example": "email@email.com"
+                        },
+                        "id": {
+                          "type": "string",
+                          "nullable": true
+                        }
+                      },
+                      "required": [
+                        "method",
+                        "address"
+                      ],
+                      "additionalProperties": false
+                    }
+                  }
+                },
+                "required": [
+                  "businessId",
+                  "supplierId",
+                  "schedules",
+                  "contactInfo"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicates successful patch of order term"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-terms/:termId/contact-info/": {
+      "post": {
+        "summary": "Create order term contact info",
+        "description": "Create order term contact info",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Order term id to create contact info for",
+              "example": "1212121"
             },
-            "Amount of records that match the query": {
-                "type": "number"
+            "required": true,
+            "name": "termId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Create new order term contact info body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "method": {
+                    "type": "string",
+                    "enum": [
+                      "email",
+                      "whatsApp"
+                    ]
+                  },
+                  "address": {
+                    "type": "string",
+                    "description": "Contact info address",
+                    "example": "email@email.com"
+                  }
+                },
+                "required": [
+                  "method",
+                  "address"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Indicates successful creation of a order term contact info"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-terms/:termId/contact-info/:contactInfoId": {
+      "put": {
+        "summary": "Update order term contact info",
+        "description": "Update order term contact info",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Order term id to update contact info for",
+              "example": "1212121"
             },
-            "Actual records": {
-                "type": "array",
-                "items": {
+            "required": true,
+            "name": "termId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Contact info id to update",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "contactInfoId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Update order term contact info body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "address": {
+                    "type": "string",
+                    "description": "Contact info address",
+                    "example": "email@email.com"
+                  }
+                },
+                "required": [
+                  "address"
+                ],
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicates successful update "
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete order term contact info",
+        "description": "Delete order term contact info",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Order term id to delete contact info for",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "termId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Contact info id to delete",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "contactInfoId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Indicates successful delete"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/order-terms/:termId/schedule/": {
+      "post": {
+        "summary": "Create order term schedule",
+        "description": "Create order term schedule",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Order term id to create schedule for",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "termId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Create new order term schedule body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "deliveryArrivalTime": {
                     "type": "object",
                     "properties": {
-                        "businessId": {
-                            "type": "string",
-                            "description": "Business id of order term",
-                            "example": "bid"
-                        },
-                        "supplierId": {
-                            "type": "string",
-                            "description": "Supplier id of order term - who the business has a agreement with",
-                            "example": "bid"
-                        },
-                        "schedules": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "deliveryArrivalTime": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dayOfWeek": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "sunday",
-                                                    "monday",
-                                                    "tuesday",
-                                                    "wednesday",
-                                                    "thursday",
-                                                    "friday",
-                                                    "saturday"
-                                                ]
-                                            },
-                                            "timeOfDay": {
-                                                "type": "string",
-                                                "description": "Time of day for delivery arrival",
-                                                "example": "14:00"
-                                            }
-                                        },
-                                        "required": [
-                                            "dayOfWeek",
-                                            "timeOfDay"
-                                        ],
-                                        "additionalProperties": false
-                                    },
-                                    "orderCutOffTime": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dayOfWeek": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "sunday",
-                                                    "monday",
-                                                    "tuesday",
-                                                    "wednesday",
-                                                    "thursday",
-                                                    "friday",
-                                                    "saturday"
-                                                ]
-                                            },
-                                            "timeOfDay": {
-                                                "type": "string",
-                                                "description": "Time of day for order cut off",
-                                                "example": "14:00"
-                                            }
-                                        },
-                                        "required": [
-                                            "dayOfWeek",
-                                            "timeOfDay"
-                                        ],
-                                        "additionalProperties": false
-                                    }
-                                },
-                                "required": [
-                                    "deliveryArrivalTime",
-                                    "orderCutOffTime"
-                                ],
-                                "additionalProperties": false
-                            }
-                        },
-                        "contactInfo": {
-                            "type": "array",
-                            "items": {
-                                "type": "object",
-                                "properties": {
-                                    "method": {
-                                        "type": "string",
-                                        "enum": [
-                                            "email",
-                                            "whatsApp"
-                                        ]
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "description": "Contact info address",
-                                        "example": "email@email.com"
-                                    }
-                                },
-                                "required": [
-                                    "method",
-                                    "address"
-                                ],
-                                "additionalProperties": false
-                            }
-                        }
+                      "dayOfWeek": {
+                        "type": "string",
+                        "enum": [
+                          "sunday",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday"
+                        ]
+                      },
+                      "timeOfDay": {
+                        "type": "string",
+                        "description": "Time of day for delivery arrival",
+                        "example": "14:00"
+                      }
                     },
                     "required": [
-                        "businessId",
-                        "supplierId",
-                        "schedules",
-                        "contactInfo"
+                      "dayOfWeek",
+                      "timeOfDay"
                     ],
                     "additionalProperties": false
-                }
-            }
-        },
-        "parameters": {}
-    },
-    "paths": {
-        "/health": {
-            "get": {
-                "summary": "Health Route",
-                "description": "Check that the service is up and running",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "All orders that match filter"
+                  },
+                  "orderCutOffTime": {
+                    "type": "object",
+                    "properties": {
+                      "dayOfWeek": {
+                        "type": "string",
+                        "enum": [
+                          "sunday",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday"
+                        ]
+                      },
+                      "timeOfDay": {
+                        "type": "string",
+                        "description": "Time of day for order cut off",
+                        "example": "14:00"
+                      }
                     },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-processes/:orderId/items/": {
-            "post": {
-                "summary": "Create Item in Order",
-                "description": "Create Item in Order",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "orderId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Create Item in Order body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "productId": {
-                                        "type": "string",
-                                        "description": "product id"
-                                    },
-                                    "name": {
-                                        "type": "string",
-                                        "description": "Name of item"
-                                    },
-                                    "sku": {
-                                        "type": "string",
-                                        "nullable": true,
-                                        "description": "Sku of item"
-                                    },
-                                    "quantity": {
-                                        "type": "number",
-                                        "description": "Quantity of item"
-                                    }
-                                },
-                                "required": [
-                                    "name",
-                                    "quantity"
-                                ]
-                            }
-                        }
-                    }
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
+                    "additionalProperties": false
+                  }
                 },
-                "responses": {
-                    "200": {
-                        "description": "Create Item in Order",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/OrderItem"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "patch": {
-                "summary": "Patch all items in order",
-                "description": "Patch all items in order - this route should create multiple items, on the condition the order does not already have items",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
+                "required": [
+                  "deliveryArrivalTime",
+                  "orderCutOffTime"
                 ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "orderId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Patch all items in order - add all items to order",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "array",
-                                "items": {
-                                    "type": "object",
-                                    "properties": {
-                                        "productId": {
-                                            "type": "string",
-                                            "description": "product id"
-                                        },
-                                        "name": {
-                                            "type": "string",
-                                            "description": "Name of item"
-                                        },
-                                        "sku": {
-                                            "type": "string",
-                                            "nullable": true,
-                                            "description": "Sku of item"
-                                        },
-                                        "quantity": {
-                                            "type": "number",
-                                            "description": "Quantity of item"
-                                        }
-                                    },
-                                    "required": [
-                                        "name",
-                                        "quantity"
-                                    ]
-                                }
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful patch",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/OrderItem"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "409": {
-                        "description": "Indicates that the order already has items"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
+                "additionalProperties": false
+              }
             }
+          }
         },
-        "/order-processes/:orderId/items/:itemId": {
-            "patch": {
-                "summary": "Patch update Item in Order",
-                "description": "Patch update Item in Order",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "orderId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "itemId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Patch update Item in Order body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PatchOrderItemRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Patch update Item in Order",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/PatchOrderItemRequest"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete Item in Order",
-                "description": "Delete Item in Order",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "orderId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "itemId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Patch update Item in Order"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-processes/": {
-            "get": {
-                "summary": "Get Orders",
-                "description": "Get all order that match the filter",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Customer id to filter by",
-                            "example": "exampleCustomerId"
-                        },
-                        "required": false,
-                        "name": "customerId",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "boolean"
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "description": "A flag to return only finalized orders or non-finalized orders, if not provided, returns all orders"
-                        },
-                        "required": false,
-                        "name": "finalized",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "number",
-                                    "maximum": 100
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "default": 25,
-                            "description": "Limit the number of orders returned"
-                        },
-                        "required": false,
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "default": 0,
-                            "description": "The amount of documents to offset(skip) before retrieving limit amount of documents"
-                        },
-                        "required": false,
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "All orders that match filter",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "data": {
-                                            "type": "array",
-                                            "items": {
-                                                "$ref": "#/components/schemas/Order"
-                                            }
-                                        },
-                                        "count": {
-                                            "type": "number"
-                                        }
-                                    },
-                                    "required": [
-                                        "data",
-                                        "count"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create Orders",
-                "description": "Create new order",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "description": "Create new order body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PostOrderRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Create new order",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "id": {
-                                            "type": "string"
-                                        },
-                                        "customerId": {
-                                            "type": "string"
-                                        },
-                                        "supplierId": {
-                                            "type": "string"
-                                        },
-                                        "items": {
-                                            "type": "array",
-                                            "items": {
-                                                "allOf": [
-                                                    {
-                                                        "$ref": "#/components/schemas/OrderItem"
-                                                    },
-                                                    {
-                                                        "properties": {
-                                                            "id": {
-                                                                "type": "string",
-                                                                "description": "Id of order item"
-                                                            },
-                                                            "productId": {
-                                                                "type": "string",
-                                                                "description": "product id"
-                                                            },
-                                                            "name": {
-                                                                "type": "string",
-                                                                "description": "Name of item"
-                                                            },
-                                                            "sku": {
-                                                                "type": "string",
-                                                                "description": "Sku of item"
-                                                            },
-                                                            "quantity": {
-                                                                "type": "number",
-                                                                "description": "Quantity of item"
-                                                            }
-                                                        }
-                                                    }
-                                                ]
-                                            }
-                                        },
-                                        "openedAt": {
-                                            "type": "string"
-                                        },
-                                        "notes": {
-                                            "type": "string"
-                                        }
-                                    },
-                                    "required": [
-                                        "id",
-                                        "customerId",
-                                        "supplierId",
-                                        "items",
-                                        "openedAt"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-processes/:orderId": {
-            "get": {
-                "summary": "Get Order by Id",
-                "description": "Get Order by Id",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "orderId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Get Order by Id",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "$ref": "#/components/schemas/Order"
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete Order by Id",
-                "description": "Delete Order by Id",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "orderId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful deletion"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "patch": {
-                "summary": "Patch Order",
-                "description": "Patch order",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "description": "Patch order body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/PatchOrderRequest"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful patch"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/purchase-list-items/": {
-            "get": {
-                "summary": "Get purchase list items",
-                "description": "Get all purchase list items that match the filter",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Business Id",
-                            "example": "businessId"
-                        },
-                        "required": true,
-                        "name": "businessId",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Supplier id",
-                            "example": "supplierId"
-                        },
-                        "required": false,
-                        "name": "supplierId",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "number",
-                                    "minimum": 0,
-                                    "maximum": 100
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "default": 25,
-                            "description": "Limit purchase list items returned",
-                            "example": 25
-                        },
-                        "required": true,
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "number",
-                                    "minimum": 0
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "default": 0,
-                            "description": "Page to retrieve",
-                            "example": 1
-                        },
-                        "required": true,
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Purchase list items",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "array",
-                                    "items": {
-                                        "$ref": "#/components/schemas/Purchase list item schema"
-                                    }
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create purchase list item",
-                "description": "Create purchase list item from body passed",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "description": "Create new purchase list item body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "$ref": "#/components/schemas/Purchase list item schema"
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Indicates successful creation of purchase list item"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/purchase-list-items/:businessId/:productId": {
-            "delete": {
-                "summary": "Delete purchase list item",
-                "description": "Delete purchase list item that matches business and product id passed",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Business Id",
-                            "example": "businessId"
-                        },
-                        "required": true,
-                        "name": "businessId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Product Id",
-                            "example": "productId"
-                        },
-                        "required": true,
-                        "name": "productId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "204": {
-                        "description": "Indicates successful deletion of purchase list item"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/purchase-list-items/:businessId/:supplierId": {
-            "put": {
-                "summary": "Updates purchase list item",
-                "description": "Updates purchase list item from body passed",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Business Id",
-                            "example": "businessId"
-                        },
-                        "required": true,
-                        "name": "businessId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Supplier id",
-                            "example": "supplierId"
-                        },
-                        "required": true,
-                        "name": "supplierId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Updates purchase list item body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "isRecommended": {
-                                        "anyOf": [
-                                            {
-                                                "type": "boolean"
-                                            },
-                                            {
-                                                "type": "string"
-                                            }
-                                        ],
-                                        "description": "Is purchase list item recommended or not",
-                                        "example": true
-                                    },
-                                    "productId": {
-                                        "type": "string",
-                                        "description": "Product Id",
-                                        "example": "productId"
-                                    }
-                                },
-                                "required": [
-                                    "isRecommended",
-                                    "productId"
-                                ]
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful update of purchase list item"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-terms/": {
-            "get": {
-                "summary": "Get order terms",
-                "description": "Get order terms that match the filter",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Business Id that the order term is relevant to"
-                        },
-                        "required": true,
-                        "name": "businessId",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Supplier id of the order terms"
-                        },
-                        "required": false,
-                        "name": "supplierId",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "number",
-                                    "maximum": 100
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "default": 25,
-                            "description": "Limit the number of orders returned"
-                        },
-                        "required": false,
-                        "name": "limit",
-                        "in": "query"
-                    },
-                    {
-                        "schema": {
-                            "anyOf": [
-                                {
-                                    "type": "number"
-                                },
-                                {
-                                    "type": "string"
-                                }
-                            ],
-                            "default": 0,
-                            "description": "The amount of documents to offset(skip) before retrieving limit amount of documents"
-                        },
-                        "required": false,
-                        "name": "offset",
-                        "in": "query"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "All order terms that match filter",
-                        "content": {
-                            "application/json": {
-                                "schema": {
-                                    "type": "object",
-                                    "properties": {
-                                        "count": {
-                                            "$ref": "#/components/schemas/Amount of records that match the query"
-                                        },
-                                        "data": {
-                                            "$ref": "#/components/schemas/Actual records"
-                                        }
-                                    },
-                                    "required": [
-                                        "count",
-                                        "data"
-                                    ]
-                                }
-                            }
-                        }
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "post": {
-                "summary": "Create order terms",
-                "description": "Create order terms",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "description": "Create new order term body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "businessId": {
-                                        "type": "string",
-                                        "description": "Business id of order term",
-                                        "example": "bid"
-                                    },
-                                    "supplierId": {
-                                        "type": "string",
-                                        "description": "Supplier id of order term - who the business has a agreement with",
-                                        "example": "bid"
-                                    },
-                                    "schedules": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "deliveryArrivalTime": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "dayOfWeek": {
-                                                            "type": "string",
-                                                            "enum": [
-                                                                "sunday",
-                                                                "monday",
-                                                                "tuesday",
-                                                                "wednesday",
-                                                                "thursday",
-                                                                "friday",
-                                                                "saturday"
-                                                            ]
-                                                        },
-                                                        "timeOfDay": {
-                                                            "type": "string",
-                                                            "description": "Time of day for delivery arrival",
-                                                            "example": "14:00"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "dayOfWeek",
-                                                        "timeOfDay"
-                                                    ],
-                                                    "additionalProperties": false
-                                                },
-                                                "orderCutOffTime": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "dayOfWeek": {
-                                                            "type": "string",
-                                                            "enum": [
-                                                                "sunday",
-                                                                "monday",
-                                                                "tuesday",
-                                                                "wednesday",
-                                                                "thursday",
-                                                                "friday",
-                                                                "saturday"
-                                                            ]
-                                                        },
-                                                        "timeOfDay": {
-                                                            "type": "string",
-                                                            "description": "Time of day for order cut off",
-                                                            "example": "14:00"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "dayOfWeek",
-                                                        "timeOfDay"
-                                                    ],
-                                                    "additionalProperties": false
-                                                }
-                                            },
-                                            "required": [
-                                                "deliveryArrivalTime",
-                                                "orderCutOffTime"
-                                            ],
-                                            "additionalProperties": false
-                                        }
-                                    },
-                                    "contactInfo": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "method": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "email",
-                                                        "whatsApp"
-                                                    ]
-                                                },
-                                                "address": {
-                                                    "type": "string",
-                                                    "description": "Contact info address",
-                                                    "example": "email@email.com"
-                                                }
-                                            },
-                                            "required": [
-                                                "method",
-                                                "address"
-                                            ],
-                                            "additionalProperties": false
-                                        }
-                                    }
-                                },
-                                "required": [
-                                    "businessId",
-                                    "supplierId",
-                                    "schedules",
-                                    "contactInfo"
-                                ],
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Indicates successful creation of order term"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-terms/:orderTermId": {
-            "patch": {
-                "summary": "Update order terms",
-                "description": "Update order terms",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "requestBody": {
-                    "description": "Update order term body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "businessId": {
-                                        "type": "string",
-                                        "description": "Business id of order term",
-                                        "example": "bid"
-                                    },
-                                    "supplierId": {
-                                        "type": "string",
-                                        "description": "Supplier id of order term - who the business has a agreement with",
-                                        "example": "bid"
-                                    },
-                                    "schedules": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "deliveryArrivalTime": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "dayOfWeek": {
-                                                            "type": "string",
-                                                            "enum": [
-                                                                "sunday",
-                                                                "monday",
-                                                                "tuesday",
-                                                                "wednesday",
-                                                                "thursday",
-                                                                "friday",
-                                                                "saturday"
-                                                            ]
-                                                        },
-                                                        "timeOfDay": {
-                                                            "type": "string",
-                                                            "description": "Time of day for delivery arrival",
-                                                            "example": "14:00"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "dayOfWeek",
-                                                        "timeOfDay"
-                                                    ],
-                                                    "additionalProperties": false
-                                                },
-                                                "orderCutOffTime": {
-                                                    "type": "object",
-                                                    "properties": {
-                                                        "dayOfWeek": {
-                                                            "type": "string",
-                                                            "enum": [
-                                                                "sunday",
-                                                                "monday",
-                                                                "tuesday",
-                                                                "wednesday",
-                                                                "thursday",
-                                                                "friday",
-                                                                "saturday"
-                                                            ]
-                                                        },
-                                                        "timeOfDay": {
-                                                            "type": "string",
-                                                            "description": "Time of day for order cut off",
-                                                            "example": "14:00"
-                                                        }
-                                                    },
-                                                    "required": [
-                                                        "dayOfWeek",
-                                                        "timeOfDay"
-                                                    ],
-                                                    "additionalProperties": false
-                                                },
-                                                "id": {
-                                                    "type": "string",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "required": [
-                                                "deliveryArrivalTime",
-                                                "orderCutOffTime"
-                                            ],
-                                            "additionalProperties": false
-                                        }
-                                    },
-                                    "contactInfo": {
-                                        "type": "array",
-                                        "items": {
-                                            "type": "object",
-                                            "properties": {
-                                                "method": {
-                                                    "type": "string",
-                                                    "enum": [
-                                                        "email",
-                                                        "whatsApp"
-                                                    ]
-                                                },
-                                                "address": {
-                                                    "type": "string",
-                                                    "description": "Contact info address",
-                                                    "example": "email@email.com"
-                                                },
-                                                "id": {
-                                                    "type": "string",
-                                                    "nullable": true
-                                                }
-                                            },
-                                            "required": [
-                                                "method",
-                                                "address"
-                                            ],
-                                            "additionalProperties": false
-                                        }
-                                    }
-                                },
-                                "required": [
-                                    "businessId",
-                                    "supplierId",
-                                    "schedules",
-                                    "contactInfo"
-                                ],
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful patch of order term"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-terms/:termId/contact-info/": {
-            "post": {
-                "summary": "Create order term contact info",
-                "description": "Create order term contact info",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Order term id to create contact info for",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "termId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Create new order term contact info body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "method": {
-                                        "type": "string",
-                                        "enum": [
-                                            "email",
-                                            "whatsApp"
-                                        ]
-                                    },
-                                    "address": {
-                                        "type": "string",
-                                        "description": "Contact info address",
-                                        "example": "email@email.com"
-                                    }
-                                },
-                                "required": [
-                                    "method",
-                                    "address"
-                                ],
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Indicates successful creation of a order term contact info"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-terms/:termId/contact-info/:contactInfoId": {
-            "put": {
-                "summary": "Update order term contact info",
-                "description": "Update order term contact info",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Order term id to update contact info for",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "termId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Contact info id to update",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "contactInfoId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Update order term contact info body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "address": {
-                                        "type": "string",
-                                        "description": "Contact info address",
-                                        "example": "email@email.com"
-                                    }
-                                },
-                                "required": [
-                                    "address"
-                                ],
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful update "
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete order term contact info",
-                "description": "Delete order term contact info",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Order term id to delete contact info for",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "termId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Contact info id to delete",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "contactInfoId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful delete"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-terms/:termId/schedule/": {
-            "post": {
-                "summary": "Create order term schedule",
-                "description": "Create order term schedule",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Order term id to create schedule for",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "termId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Create new order term schedule body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "deliveryArrivalTime": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dayOfWeek": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "sunday",
-                                                    "monday",
-                                                    "tuesday",
-                                                    "wednesday",
-                                                    "thursday",
-                                                    "friday",
-                                                    "saturday"
-                                                ]
-                                            },
-                                            "timeOfDay": {
-                                                "type": "string",
-                                                "description": "Time of day for delivery arrival",
-                                                "example": "14:00"
-                                            }
-                                        },
-                                        "required": [
-                                            "dayOfWeek",
-                                            "timeOfDay"
-                                        ],
-                                        "additionalProperties": false
-                                    },
-                                    "orderCutOffTime": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dayOfWeek": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "sunday",
-                                                    "monday",
-                                                    "tuesday",
-                                                    "wednesday",
-                                                    "thursday",
-                                                    "friday",
-                                                    "saturday"
-                                                ]
-                                            },
-                                            "timeOfDay": {
-                                                "type": "string",
-                                                "description": "Time of day for order cut off",
-                                                "example": "14:00"
-                                            }
-                                        },
-                                        "required": [
-                                            "dayOfWeek",
-                                            "timeOfDay"
-                                        ],
-                                        "additionalProperties": false
-                                    }
-                                },
-                                "required": [
-                                    "deliveryArrivalTime",
-                                    "orderCutOffTime"
-                                ],
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "201": {
-                        "description": "Indicates successful creation of a order term schedule"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/order-terms/:termId/schedule/:scheduleId": {
-            "put": {
-                "summary": "Update order term schedule",
-                "description": "Update order term schedule",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Order term id to update schedule for",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "termId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Schedule id to update",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "scheduleId",
-                        "in": "path"
-                    }
-                ],
-                "requestBody": {
-                    "description": "Update order term schedule body request",
-                    "required": true,
-                    "content": {
-                        "application/json": {
-                            "schema": {
-                                "type": "object",
-                                "properties": {
-                                    "deliveryArrivalTime": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dayOfWeek": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "sunday",
-                                                    "monday",
-                                                    "tuesday",
-                                                    "wednesday",
-                                                    "thursday",
-                                                    "friday",
-                                                    "saturday"
-                                                ]
-                                            },
-                                            "timeOfDay": {
-                                                "type": "string",
-                                                "description": "Time of day for delivery arrival",
-                                                "example": "14:00"
-                                            }
-                                        },
-                                        "required": [
-                                            "dayOfWeek",
-                                            "timeOfDay"
-                                        ],
-                                        "additionalProperties": false
-                                    },
-                                    "orderCutOffTime": {
-                                        "type": "object",
-                                        "properties": {
-                                            "dayOfWeek": {
-                                                "type": "string",
-                                                "enum": [
-                                                    "sunday",
-                                                    "monday",
-                                                    "tuesday",
-                                                    "wednesday",
-                                                    "thursday",
-                                                    "friday",
-                                                    "saturday"
-                                                ]
-                                            },
-                                            "timeOfDay": {
-                                                "type": "string",
-                                                "description": "Time of day for order cut off",
-                                                "example": "14:00"
-                                            }
-                                        },
-                                        "required": [
-                                            "dayOfWeek",
-                                            "timeOfDay"
-                                        ],
-                                        "additionalProperties": false
-                                    }
-                                },
-                                "additionalProperties": false
-                            }
-                        }
-                    }
-                },
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful update "
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            },
-            "delete": {
-                "summary": "Delete order term schedule",
-                "description": "Delete order term schedule",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "parameters": [
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Order term id to delete schedule for",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "termId",
-                        "in": "path"
-                    },
-                    {
-                        "schema": {
-                            "type": "string",
-                            "description": "Schedule id to delete",
-                            "example": "1212121"
-                        },
-                        "required": true,
-                        "name": "scheduleId",
-                        "in": "path"
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Indicates successful delete"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
-        },
-        "/docs/json": {
-            "get": {
-                "summary": "Get Docs",
-                "description": "Get the json representation of our open api docs",
-                "security": [
-                    {
-                        "bearerAuth": []
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "JSON that holds the openapi specification"
-                    },
-                    "400": {
-                        "description": "Request validator error description"
-                    },
-                    "401": {
-                        "description": "Unauthorized"
-                    },
-                    "403": {
-                        "description": "Forbidden"
-                    },
-                    "500": {
-                        "description": "Unexpected exception"
-                    }
-                }
-            }
+        "responses": {
+          "201": {
+            "description": "Indicates successful creation of a order term schedule"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
         }
+      }
+    },
+    "/order-terms/:termId/schedule/:scheduleId": {
+      "put": {
+        "summary": "Update order term schedule",
+        "description": "Update order term schedule",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Order term id to update schedule for",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "termId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Schedule id to update",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "scheduleId",
+            "in": "path"
+          }
+        ],
+        "requestBody": {
+          "description": "Update order term schedule body request",
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "deliveryArrivalTime": {
+                    "type": "object",
+                    "properties": {
+                      "dayOfWeek": {
+                        "type": "string",
+                        "enum": [
+                          "sunday",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday"
+                        ]
+                      },
+                      "timeOfDay": {
+                        "type": "string",
+                        "description": "Time of day for delivery arrival",
+                        "example": "14:00"
+                      }
+                    },
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
+                    "additionalProperties": false
+                  },
+                  "orderCutOffTime": {
+                    "type": "object",
+                    "properties": {
+                      "dayOfWeek": {
+                        "type": "string",
+                        "enum": [
+                          "sunday",
+                          "monday",
+                          "tuesday",
+                          "wednesday",
+                          "thursday",
+                          "friday",
+                          "saturday"
+                        ]
+                      },
+                      "timeOfDay": {
+                        "type": "string",
+                        "description": "Time of day for order cut off",
+                        "example": "14:00"
+                      }
+                    },
+                    "required": [
+                      "dayOfWeek",
+                      "timeOfDay"
+                    ],
+                    "additionalProperties": false
+                  }
+                },
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Indicates successful update "
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete order term schedule",
+        "description": "Delete order term schedule",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "schema": {
+              "type": "string",
+              "description": "Order term id to delete schedule for",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "termId",
+            "in": "path"
+          },
+          {
+            "schema": {
+              "type": "string",
+              "description": "Schedule id to delete",
+              "example": "1212121"
+            },
+            "required": true,
+            "name": "scheduleId",
+            "in": "path"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Indicates successful delete"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/docs/json": {
+      "get": {
+        "summary": "Get Docs",
+        "description": "Get the json representation of our open api docs",
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "JSON that holds the openapi specification"
+          },
+          "400": {
+            "description": "Request validator error description"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
+          },
+          "500": {
+            "description": "Unexpected exception"
+          }
+        }
+      }
+    },
+    "/product-arrangement": {
+      "get": {
+        "summary": "Get product arrangement",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "zhovdc5p60hf4"
+                      }
+                    },
+                    "businessId": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "lfy7kn7840ojm"
+                      }
+                    },
+                    "supplierId": {
+                      "type": "string",
+                      "x-stoplight": {
+                        "id": "ow9nx75eyohzz"
+                      }
+                    },
+                    "products": {
+                      "type": "array",
+                      "x-stoplight": {
+                        "id": "j9r4ajrasvm3t"
+                      },
+                      "minItems": 1,
+                      "items": {
+                        "x-stoplight": {
+                          "id": "o9z6mxyoxs0v8"
+                        },
+                        "type": "object",
+                        "properties": {
+                          "productId": {
+                            "type": "string",
+                            "x-stoplight": {
+                              "id": "i69qekoibw8s8"
+                            }
+                          },
+                          "placementInList": {
+                            "type": "integer",
+                            "x-stoplight": {
+                              "id": "0td25z01bi6bb"
+                            },
+                            "minimum": 0
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "operationId": "get-product-arrangement",
+        "x-stoplight": {
+          "id": "kc1h1kv4imp8x"
+        },
+        "description": "This endpoint returns the product arrangement for each supplier",
+        "parameters": [
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "businessId",
+            "required": true
+          },
+          {
+            "schema": {
+              "type": "string"
+            },
+            "in": "query",
+            "name": "supplierId"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "default": 25,
+              "maximum": 100,
+              "minimum": 0
+            },
+            "in": "query",
+            "name": "limit"
+          },
+          {
+            "schema": {
+              "type": "number",
+              "default": 0,
+              "minimum": 0
+            },
+            "in": "query",
+            "name": "offset"
+          }
+        ]
+      },
+      "post": {
+        "summary": "Create product arrangement",
+        "tags": [],
+        "responses": {
+          "200": {
+            "description": "Indicates successfull creation"
+          }
+        },
+        "operationId": "post-product-arrangement",
+        "x-stoplight": {
+          "id": "q1d86ohluasoc"
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "businessId": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "4octghavj3uug"
+                    }
+                  },
+                  "supplierId": {
+                    "type": "string",
+                    "x-stoplight": {
+                      "id": "kbaoti50syhsk"
+                    }
+                  },
+                  "products": {
+                    "type": "array",
+                    "x-stoplight": {
+                      "id": "cn4u1lnhh77mt"
+                    },
+                    "minItems": 1,
+                    "items": {
+                      "x-stoplight": {
+                        "id": "pnitvsyovwdjl"
+                      },
+                      "type": "object",
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "x-stoplight": {
+                            "id": "3f3ev5n18xdrp"
+                          }
+                        },
+                        "placementInList": {
+                          "type": "integer",
+                          "x-stoplight": {
+                            "id": "apjb23079xfz8"
+                          },
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/product-arrangement/:productArrangementId": {
+      "patch": {
+        "summary": "Patch product arrangement",
+        "tags": [],
+        "responses": {},
+        "operationId": "patch-product-arrangement-:productArrangementId",
+        "x-stoplight": {
+          "id": "iafeqajnbwzih"
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "products": {
+                    "type": "array",
+                    "x-stoplight": {
+                      "id": "f6ddbwb91537t"
+                    },
+                    "minItems": 1,
+                    "items": {
+                      "x-stoplight": {
+                        "id": "264typqsfzmro"
+                      },
+                      "type": "object",
+                      "properties": {
+                        "productId": {
+                          "type": "string",
+                          "x-stoplight": {
+                            "id": "ugboqn8k9h9kt"
+                          }
+                        },
+                        "placementInList": {
+                          "type": "integer",
+                          "x-stoplight": {
+                            "id": "tsxtc0wfs09vr"
+                          },
+                          "minimum": 0
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete product arrangement",
+        "tags": [],
+        "responses": {},
+        "operationId": "delete-product-arrangement-:productArrangementId",
+        "x-stoplight": {
+          "id": "k30eod4fjptn0"
+        },
+        "description": "Delete product arrangement"
+      }
     }
+  }
 }
